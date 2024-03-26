@@ -57,3 +57,6 @@ export default function(code: string, options: SyntaxHighlighterOptions) {
 
     return code;
 }
+
+import { registerLanguage, LanguageDefinition, Language } from "./languageManager.js";
+export { registerLanguage, LanguageDefinition, Language };
