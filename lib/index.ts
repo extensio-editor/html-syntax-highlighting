@@ -1,3 +1,5 @@
+import { Language, LanguageDefinition, getLanguages, registerLanguage,  } from "./languageManager.js";
+
 /**
  * @property {string} language - The language that the string should be highlighted as, Default is javascript.
  * @property {string} tailwind - Wether or not to use Tailwind CSS, Default is false.
@@ -44,6 +46,36 @@ const defaultColors: HighlighterColors = {
     comment: '#0f4503',
 };
 
+function getLanguageDefinition(language: string): LanguageDefinition {
+    let languages = getLanguages()
+    languages = languages.filter((lang: Language) => {
+        return lang.name.toUpperCase() === language.toUpperCase();
+    });
+
+    if (languages.length > 1) {
+        console.warn(`Multiple languages found with the name ${language}, Using the first one found.`);
+    }
+
+    if (languages.length === 0) {
+        console.warn(`No language found with the name ${language}.`);
+        return {
+            identifier: [] as RegExp[],
+            keyword: [] as RegExp[],
+            separator: [] as RegExp[],
+            operator: [] as RegExp[],
+            literals: {
+                boolean: [] as RegExp[],
+                number: [] as RegExp[],
+                string: [] as RegExp[],
+                null: [] as RegExp[],
+            },
+            comment: [] as RegExp[],
+        } as LanguageDefinition;
+    }
+
+    return languages[0].defenition;
+}
+
 /**
  * Highlight code in html syntax
  * @param code The code to be highlighted
@@ -55,8 +87,15 @@ export default function(code: string, options: SyntaxHighlighterOptions) {
     options.tailwind = options.tailwind || false;
     options.colors = options.colors || defaultColors;
 
+    // Get the language definition based of the language.
+    const languageDefinition = getLanguageDefinition(options.language);
+
+    // FOR TESTING PURPOSES
+    // TODO: Remove this
+    // TODO: Add unit tests instead
+    console.log(languageDefinition);
+
     return code;
 }
 
-import { registerLanguage, LanguageDefinition, Language } from "./languageManager.js";
 export { registerLanguage, LanguageDefinition, Language };
