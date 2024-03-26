@@ -9,7 +9,7 @@ describe('Registration', () => {
                 defenition: { identifier: [], keyword: [], separator: [], operator: [], literals: { boolean: [], number: [], string: [], null: [], }, comment: [] }
             };
             registerLanguage(emptyLang);
-            assert.equal(getLanguageDefinition(), emptyLang.defenition);
+            assert.equal(getLanguageDefinition("test"), emptyLang.defenition);
         })
     });
 });
