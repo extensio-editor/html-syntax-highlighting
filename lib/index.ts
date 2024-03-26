@@ -105,3 +105,10 @@ export default function(code: string, options: SyntaxHighlighterOptions) {
 }
 
 export { registerLanguage, LanguageDefinition, Language };
+
+
+/**
+ * Importing default languages.
+ * Any non default language can be imported in the file that uses it.
+*/
+import "./JavaScript.js"
