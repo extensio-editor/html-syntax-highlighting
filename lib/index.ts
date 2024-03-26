@@ -52,7 +52,7 @@ const defaultColors: HighlighterColors = {
  * @param language The language name to get the language definition for.
  * @returns The language definition.
  */
-function getLanguageDefinition(language: string): LanguageDefinition {
+export function getLanguageDefinition(language: string): LanguageDefinition {
     let languages = getLanguages()
     languages = languages.filter((lang: Language) => {
         return lang.name.toUpperCase() === language.toUpperCase();
@@ -105,3 +105,10 @@ export default function(code: string, options: SyntaxHighlighterOptions) {
 }
 
 export { registerLanguage, LanguageDefinition, Language };
+
+
+/**
+ * Importing default languages.
+ * Any non default language can be imported in the file that uses it.
+*/
+import "./JavaScript.js"
