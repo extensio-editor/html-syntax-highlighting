@@ -12,6 +12,7 @@ export interface LanguageDefinition {
         boolean: RegExp[];
         number: RegExp[];
         string: RegExp[];
+        null: RegExp[];
     };
     comment: RegExp[];
 }
