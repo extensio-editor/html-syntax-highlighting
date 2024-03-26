@@ -46,6 +46,11 @@ const defaultColors: HighlighterColors = {
     comment: '#0f4503',
 };
 
+/**
+ * Gets a language definition for a given language name.
+ * @param language The language name to get the language definition for.
+ * @returns The language definition.
+ */
 function getLanguageDefinition(language: string): LanguageDefinition {
     let languages = getLanguages()
     languages = languages.filter((lang: Language) => {
