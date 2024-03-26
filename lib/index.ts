@@ -3,6 +3,7 @@ import { Language, LanguageDefinition, getLanguages, registerLanguage,  } from "
 /**
  * @property {string} language - The language that the string should be highlighted as, Default is javascript.
  * @property {string} tailwind - Wether or not to use Tailwind CSS, Default is false.
+ * @property {HighlighterColors} colors - The colors that should be used for highlighting.
  */
 export interface SyntaxHighlighterOptions {
     language?: string;
