@@ -1,5 +1,5 @@
 {
-  "name": "html-syntax-highlighting",
+  "name": "@extensio/html-syntax-highlighting",
   "version": "1.0.0",
   "type": "module",
   "main": "dist/index.js",
@@ -12,5 +12,9 @@
   "scripts": {
     "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "chai": "^5.1.0",
+    "mocha": "^10.3.0"
   }
 }
