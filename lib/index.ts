@@ -96,8 +96,18 @@ export default function(code: string, options: SyntaxHighlighterOptions) {
     // Get the language definition based of the language.
     const languageDefinition = getLanguageDefinition(options.language);
 
-    // Loop over every regex in the language definition.
-    // loop over comments
+    let C = structuredClone(code);
+
+    let found: RegExpMatchArray[] = [];
+
+    // find all comments
+    languageDefinition.comment.forEach((commentMatcher) => {
+        for (const comment of C.matchAll(commentMatcher)) {
+            found.push(comment);
+        }
+
+        C = C.replaceAll(commentMatcher, "");
+    });
     // loop over string literals
     //      We need to loop over all types of strings, then for ones that overlap, pick the longest match.
     // loop over other literals
@@ -105,6 +115,8 @@ export default function(code: string, options: SyntaxHighlighterOptions) {
     // loop over seperators
     // loop over keywords
     // loop over identifiers
+
+    console.log(C);
 
     return code;
 }
