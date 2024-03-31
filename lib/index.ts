@@ -180,6 +180,11 @@ export default function(code: string, options: SyntaxHighlighterOptions) {
         C = C.replaceAll(identifierMatcher, "");
     });
 
+    // New lines in html are made with <br> tags. So we match newlines seperately.
+    for(const newline of C.matchAll(/\n\r|\n/g)) {
+        found.push({value: newline, type: "newline"});
+    }
+
     // We want the code to be the same in the source as in the result,
     // so we are also matching any unmatched whitespace.
     for (const whitespace of C.matchAll(/\s+?/g)) {
