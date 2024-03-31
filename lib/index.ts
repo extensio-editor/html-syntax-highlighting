@@ -96,10 +96,7 @@ export default function(code: string, options: SyntaxHighlighterOptions) {
     // Get the language definition based of the language.
     const languageDefinition = getLanguageDefinition(options.language);
 
-    // FOR TESTING PURPOSES
-    // TODO: Remove this
-    // TODO: Add unit tests instead
-    console.log(languageDefinition);
+    // Loop over every regex in the language definition.
 
     return code;
 }
