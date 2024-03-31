@@ -155,9 +155,30 @@ export default function(code: string, options: SyntaxHighlighterOptions) {
         }
         C = C.replaceAll(operatorMatcher, "");
     });
-    // loop over seperators
-    // loop over keywords
-    // loop over identifiers
+
+    // find seperators
+    languageDefinition.separator.forEach((separatorMatcher) => {
+        for (const separator of C.matchAll(separatorMatcher)) {
+            found.push({value: separator, type: "separator"});
+        }
+        C = C.replaceAll(separatorMatcher, "");
+    });
+
+    // find keywords
+    languageDefinition.keyword.forEach((keywordMatcher) => {
+        for (const keyword of C.matchAll(keywordMatcher)) {
+            found.push({value: keyword, type: "keyword"});
+        }
+        C = C.replaceAll(keywordMatcher, "");
+    });
+
+    // find identifiers
+    languageDefinition.identifier.forEach((identifierMatcher) => {
+        for (const identifier of C.matchAll(identifierMatcher)) {
+            found.push({value: identifier, type: "identifier"});
+        }
+        C = C.replaceAll(identifierMatcher, "");
+    });
 
     console.log(C);
 
