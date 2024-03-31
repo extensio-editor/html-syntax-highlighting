@@ -20,7 +20,7 @@ describe('Registration', () => {
 
     describe("Highlighter", () => {
         it("Should create sapns out of the text", () => {
-            const highlighted = syntaxHighligher("const a = 1;", {
+            const highlighted = syntaxHighligher("const a = 1 \n// Testing comment", {
                 language: "JS",
             });
             expect(highlighted).to.include("span");
