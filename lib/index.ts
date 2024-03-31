@@ -180,6 +180,17 @@ export default function(code: string, options: SyntaxHighlighterOptions) {
         C = C.replaceAll(identifierMatcher, "");
     });
 
+    // We want the code to be the same in the source as in the result,
+    // so we are also matching any unmatched whitespace.
+    for (const whitespace of C.matchAll(/\s+?/g)) {
+        found.push({value: whitespace, type: "whitespace"});
+    }
+
+    // For the same reason we will also match any other unmatched characters.
+    for (const character of C.matchAll(/\S+/g)) {
+        found.push({value: character, type: "character"});
+    }
+
     // At this point, everything should be matched and removed.
     // If not the code has a syntax error.
     if (C.trim().length > 0) {
@@ -187,6 +198,11 @@ export default function(code: string, options: SyntaxHighlighterOptions) {
     }
 
     const highlighted = "";
+
+    // Sort all found values by where in the code they should be.
+    found = found.sort((a, b) => {
+        return (a.value.index || 0) - (b.value.index || 0);
+    });
 
     return highlighted;
 }
