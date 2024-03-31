@@ -108,9 +108,38 @@ export default function(code: string, options: SyntaxHighlighterOptions) {
 
         C = C.replaceAll(commentMatcher, "");
     });
-    // loop over string literals
-    //      We need to loop over all types of strings, then for ones that overlap, pick the longest match.
-    // loop over other literals
+
+    // Find all strings
+    languageDefinition.literals.string.forEach((stringMatcher) => {
+        for (const string of C.matchAll(stringMatcher)) {
+            found.push(string);
+        }
+        // We dont need to check overlapping strings because they will both be given the same color anyways.
+        C = C.replaceAll(stringMatcher, "");
+    });
+
+    // find other literals
+    // numeric literals
+    languageDefinition.literals.number.forEach((numberMatcher) => {
+        for (const number of C.matchAll(numberMatcher)) {
+            found.push(number);
+        }
+        C = C.replaceAll(numberMatcher, "");
+    });
+    // boolean literals
+    languageDefinition.literals.boolean.forEach((booleanMatcher) => {
+        for (const boolean of C.matchAll(booleanMatcher)) {
+            found.push(boolean);
+        }
+        C = C.replaceAll(booleanMatcher, "");
+    });
+    // null literals
+    languageDefinition.literals.null.forEach((nullMatcher) => {
+        for (const nullLiteral of C.matchAll(nullMatcher)) {
+            found.push(nullLiteral);
+        }
+        C = C.replaceAll(nullMatcher, "");
+    });
     // loop over operators
     // loop over seperators
     // loop over keywords
