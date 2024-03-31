@@ -34,20 +34,20 @@ export interface HighlighterColors {
 /**
  * The default color scheme for the syntax highlighter.
  * Values are picked generically based on what we thought looked good.
+ * (These values were picked by chatgpt, I dont really like them but it'll do for now)
  */
-// TODO: change colors, thes look bad
 const defaultColors: HighlighterColors = {
-    identifier: '#80dbdd',
-    keyword: '#7e43d1',
-    separator: '#d4d4d4',
-    operator: '#7ce6ba',
+    identifier: '#7eaacc',
+    keyword: '#ff7f0e',
+    separator: '#dcdcdc',
+    operator: '#2ca02c',
     literals: {
-        boolean: '#1a12b3',
-        number: '#3d73f2',
-        string: '#f5a973',
-        null: '#1a12b3',
+        boolean: '#9467bd',
+        number: '#1f77b4',
+        string: '#ffbb78',
+        null: '#d62728',
     },
-    comment: '#0f4503',
+    comment: '#808080',
 };
 
 /**
