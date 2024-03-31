@@ -10,7 +10,7 @@ It is very simple and intuitive to use. Simply said string with code goes in hig
 We aim to be able to support the following languages.
 The checked ones are currently implemented, the non-checked ones are yet to be implemented.
 
-- [ ] TS / TypeScript & JS / JavaScript
+- [x] TS / TypeScript & JS / JavaScript
 - [ ] CSS
 - [ ] HTML
 - [ ] Ruby
