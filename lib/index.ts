@@ -84,9 +84,16 @@ export function getLanguageDefinition(language: string): LanguageDefinition {
     return languages[0].defenition;
 }
 
+/**
+ * A interface for results it finds in code.
+ * @property {RegExpMatchArray} velue - The value that was found.
+ * @property {string} type - The type of the value.
+ * @property {number} index - The computed index of the value as it would be in the code instead of in the code with removed matches.
+ */
 interface result {
     value: RegExpMatchArray;
     type: string;
+    index: number;
 }
 
 /**
@@ -110,7 +117,8 @@ export default function(code: string, options: SyntaxHighlighterOptions) {
     // find all comments
     languageDefinition.comment.forEach((commentMatcher) => {
         for (const comment of C.matchAll(commentMatcher)) {
-            found.push({value: comment, type: "comment"});
+            // Dont need to ajust index since nothing has been removed from C yet
+            found.push({value: comment, type: "comment", index: comment.index!});
         }
 
         C = C.replaceAll(commentMatcher, "");
@@ -118,9 +126,27 @@ export default function(code: string, options: SyntaxHighlighterOptions) {
 
     // Find all strings
     languageDefinition.literals.string.forEach((stringMatcher) => {
+        let fullFound: result[] = [];
+        let partialFound: result[] = [];
         for (const string of C.matchAll(stringMatcher)) {
-            found.push({value: string, type: "string"});
+            partialFound.push({value: string, type: "string", index: string.index!});
         }
+        for (const string of code.matchAll(stringMatcher)) {
+            fullFound.push({value: string, type: "string", index: string.index!});
+        }
+        for (let i = 0; i < partialFound.length; i++) {
+            if (!fullFound[i]) {
+                throw new Error("Something went wrong!");
+            }
+
+            if (partialFound[i].value[0] === fullFound[i].value[0]) {
+                found.push({value: partialFound[i].value, type: "string", index: fullFound[i].index});
+            } else {
+                fullFound.splice(i, 1);
+                i -= 1;
+            }
+        }
+
         // We dont need to check overlapping strings because they will both be given the same color anyways.
         C = C.replaceAll(stringMatcher, "");
     });
@@ -128,72 +154,215 @@ export default function(code: string, options: SyntaxHighlighterOptions) {
     // find other literals
     // numeric literals
     languageDefinition.literals.number.forEach((numberMatcher) => {
+        let fullFound: result[] = [];
+        let partialFound: result[] = [];
         for (const number of C.matchAll(numberMatcher)) {
-            found.push({value: number, type: "number"});
+            partialFound.push({value: number, type: "number", index: number.index!});
+        }
+        for (const number of code.matchAll(numberMatcher)) {
+            fullFound.push({value: number, type: "number", index: number.index!});
+        }
+        for (let i = 0; i < partialFound.length; i++) {
+            if (!fullFound[i]) {
+                throw new Error("Something went wrong!");
+            }
+
+            if (partialFound[i].value[0] === fullFound[i].value[0]) {
+                found.push({value: partialFound[i].value, type: "number", index: fullFound[i].index});
+            } else {
+                fullFound.splice(i, 1);
+                i -= 1;
+            }
         }
         C = C.replaceAll(numberMatcher, "");
     });
     // boolean literals
     languageDefinition.literals.boolean.forEach((booleanMatcher) => {
+        let fullFound: result[] = [];
+        let partialFound: result[] = [];
         for (const boolean of C.matchAll(booleanMatcher)) {
-            found.push({value: boolean, type: "boolean"});
+            partialFound.push({value: boolean, type: "boolean", index: boolean.index!});
+        }
+        for (const boolean of code.matchAll(booleanMatcher)) {
+            fullFound.push({value: boolean, type: "boolean", index: boolean.index!});
+        }
+        for (let i = 0; i < partialFound.length; i++) {
+            if (!fullFound[i]) {
+                throw new Error("Something went wrong!");
+            }
+
+            if (partialFound[i].value[0] === fullFound[i].value[0]) {
+                found.push({value: partialFound[i].value, type: "boolean", index: fullFound[i].index});
+            } else {
+                fullFound.splice(i, 1);
+                i -= 1;
+            }
         }
         C = C.replaceAll(booleanMatcher, "");
     });
     // null literals
     languageDefinition.literals.null.forEach((nullMatcher) => {
+        let fullFound: result[] = [];
+        let partialFound: result[] = [];
         for (const nullLiteral of C.matchAll(nullMatcher)) {
-            found.push({value: nullLiteral, type: "null"});
+            partialFound.push({value: nullLiteral, type: "null", index: nullLiteral.index!});
+        }
+        for (const nullLiteral of code.matchAll(nullMatcher)) {
+            fullFound.push({value: nullLiteral, type: "nullLiteral", index: nullLiteral.index!});
+        }
+        for (let i = 0; i < partialFound.length; i++) {
+            if (!fullFound[i]) {
+                throw new Error("Something went wrong!");
+            }
+
+            if (partialFound[i].value[0] === fullFound[i].value[0]) {
+                found.push({value: partialFound[i].value, type: "nullLiteral", index: fullFound[i].index});
+            } else {
+                fullFound.splice(i, 1);
+                i -= 1;
+            }
         }
         C = C.replaceAll(nullMatcher, "");
     });
 
     // find operators
     languageDefinition.operator.forEach((operatorMatcher) => {
+        let fullFound: result[] = [];
+        let partialFound: result[] = [];
         for (const operator of C.matchAll(operatorMatcher)) {
-            found.push({value: operator, type: "operator"});
+            partialFound.push({value: operator, type: "operator", index: operator.index!});
+        }
+        for (const operator of code.matchAll(operatorMatcher)) {
+            fullFound.push({value: operator, type: "operator", index: operator.index!});
+        }
+        for (let i = 0; i < partialFound.length; i++) {
+            if (!fullFound[i]) {
+                throw new Error("Something went wrong!");
+            }
+
+            if (partialFound[i].value[0] === fullFound[i].value[0]) {
+                found.push({value: partialFound[i].value, type: "operator", index: fullFound[i].index});
+            } else {
+                fullFound.splice(i, 1);
+                i -= 1;
+            }
         }
         C = C.replaceAll(operatorMatcher, "");
     });
 
     // find seperators
     languageDefinition.separator.forEach((separatorMatcher) => {
+        let fullFound: result[] = [];
+        let partialFound: result[] = [];
         for (const separator of C.matchAll(separatorMatcher)) {
-            found.push({value: separator, type: "separator"});
+            partialFound.push({value: separator, type: "separator", index: separator.index!});
+        }
+        for (const separator of code.matchAll(separatorMatcher)) {
+            fullFound.push({value: separator, type: "separator", index: separator.index!});
+        }
+        for (let i = 0; i < partialFound.length; i++) {
+            if (!fullFound[i]) {
+                throw new Error("Something went wrong!");
+            }
+
+            if (partialFound[i].value[0] === fullFound[i].value[0]) {
+                found.push({value: partialFound[i].value, type: "separator", index: fullFound[i].index});
+            } else {
+                fullFound.splice(i, 1);
+                i -= 1;
+            }
         }
         C = C.replaceAll(separatorMatcher, "");
     });
 
     // find keywords
     languageDefinition.keyword.forEach((keywordMatcher) => {
+        let fullFound: result[] = [];
+        let partialFound: result[] = [];
         for (const keyword of C.matchAll(keywordMatcher)) {
-            found.push({value: keyword, type: "keyword"});
+            partialFound.push({value: keyword, type: "keyword", index: keyword.index!});
+        }
+        for (const keyword of code.matchAll(keywordMatcher)) {
+            fullFound.push({value: keyword, type: "keyword", index: keyword.index!});
+        }
+        for (let i = 0; i < partialFound.length; i++) {
+            if (!fullFound[i]) {
+                throw new Error("Something went wrong!");
+            }
+
+            if (partialFound[i].value[0] === fullFound[i].value[0]) {
+                found.push({value: partialFound[i].value, type: "keyword", index: fullFound[i].index});
+            } else {
+                fullFound.splice(i, 1);
+                i -= 1;
+            }
         }
         C = C.replaceAll(keywordMatcher, "");
     });
 
     // find identifiers
     languageDefinition.identifier.forEach((identifierMatcher) => {
+        let fullFound: result[] = [];
+        let partialFound: result[] = [];
         for (const identifier of C.matchAll(identifierMatcher)) {
-            found.push({value: identifier, type: "identifier"});
+            partialFound.push({value: identifier, type: "identifier", index: identifier.index!});
+        }
+        for (const identifier of code.matchAll(identifierMatcher)) {
+            fullFound.push({value: identifier, type: "identifier", index: identifier.index!});
+        }
+        for (let i = 0; i < partialFound.length; i++) {
+            if (!fullFound[i]) {
+                throw new Error("Something went wrong!");
+            }
+
+            if (partialFound[i].value[0] === fullFound[i].value[0]) {
+                found.push({value: partialFound[i].value, type: "identifier", index: fullFound[i].index});
+            } else {
+                fullFound.splice(i, 1);
+                i -= 1;
+            }
         }
         C = C.replaceAll(identifierMatcher, "");
     });
 
     // New lines in html are made with <br> tags. So we match newlines seperately.
+    let fullFound: result[] = [];
+    let partialFound: result[] = [];
     for(const newline of C.matchAll(/\n\r|\n/g)) {
-        found.push({value: newline, type: "newline"});
+        partialFound.push({value: newline, type: "newline", index: newline.index!});
+    }
+    for (const newline of code.matchAll(/\n\r|\n/g)) {
+        fullFound.push({value: newline, type: "newline", index: newline.index!});
+    }
+    for (let i = 0; i < partialFound.length; i++) {
+        found.push({value: partialFound[i].value, type: "newline", index: fullFound[i].index});
     }
 
     // We want the code to be the same in the source as in the result,
     // so we are also matching any unmatched whitespace.
-    for (const whitespace of C.matchAll(/\s+?/g)) {
-        found.push({value: whitespace, type: "whitespace"});
+    fullFound = [];
+    partialFound = [];
+    for(const whitespace of C.matchAll(/\s+?/g)) {
+        partialFound.push({value: whitespace, type: "whitespace", index: whitespace.index!});
+    }
+    for (const whitespace of code.matchAll(/\s+?/g)) {
+        fullFound.push({value: whitespace, type: "whitespace", index: whitespace.index!});
+    }
+    for (let i = 0; i < partialFound.length; i++) {
+        found.push({value: partialFound[i].value, type: "whitespace", index: fullFound[i].index});
     }
 
     // For the same reason we will also match any other unmatched characters.
-    for (const character of C.matchAll(/\S+/g)) {
-        found.push({value: character, type: "character"});
+    fullFound = [];
+    partialFound = [];
+    for(const character of C.matchAll(/\S+/g)) {
+        partialFound.push({value: character, type: "character", index: character.index!});
+    }
+    for (const character of code.matchAll(/\S+/g)) {
+        fullFound.push({value: character, type: "character", index: character.index!});
+    }
+    for (let i = 0; i < partialFound.length; i++) {
+        found.push({value: partialFound[i].value, type: "character", index: fullFound[i].index});
     }
 
     // At this point, everything should be matched and removed.
@@ -206,9 +375,9 @@ export default function(code: string, options: SyntaxHighlighterOptions) {
 
     // Sort all found values by where in the code they should be.
     found = found.sort((a, b) => {
-        return (a.value.index || 0) - (b.value.index || 0);
+        return (a.index || 0) - (b.index || 0);
     });
-
+    
     return highlighted;
 }
 
