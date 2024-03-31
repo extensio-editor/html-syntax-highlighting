@@ -26,6 +26,7 @@ export interface HighlighterColors {
         boolean: string;
         number: string;
         string: string;
+        null: string;
     };
     comment: string;
 }
@@ -43,6 +44,7 @@ const defaultColors: HighlighterColors = {
         boolean: '#1a12b3',
         number: '#3d73f2',
         string: '#f5a973',
+        null: '#1a12b3',
     },
     comment: '#0f4503',
 };
@@ -82,6 +84,11 @@ export function getLanguageDefinition(language: string): LanguageDefinition {
     return languages[0].defenition;
 }
 
+interface result {
+    value: RegExpMatchArray;
+    type: string;
+}
+
 /**
  * Highlight code in html syntax
  * @param code The code to be highlighted
@@ -98,12 +105,12 @@ export default function(code: string, options: SyntaxHighlighterOptions) {
 
     let C = structuredClone(code);
 
-    let found: RegExpMatchArray[] = [];
+    let found: result[] = [];
 
     // find all comments
     languageDefinition.comment.forEach((commentMatcher) => {
         for (const comment of C.matchAll(commentMatcher)) {
-            found.push(comment);
+            found.push({value: comment, type: "comment"});
         }
 
         C = C.replaceAll(commentMatcher, "");
@@ -112,7 +119,7 @@ export default function(code: string, options: SyntaxHighlighterOptions) {
     // Find all strings
     languageDefinition.literals.string.forEach((stringMatcher) => {
         for (const string of C.matchAll(stringMatcher)) {
-            found.push(string);
+            found.push({value: string, type: "string"});
         }
         // We dont need to check overlapping strings because they will both be given the same color anyways.
         C = C.replaceAll(stringMatcher, "");
@@ -122,25 +129,32 @@ export default function(code: string, options: SyntaxHighlighterOptions) {
     // numeric literals
     languageDefinition.literals.number.forEach((numberMatcher) => {
         for (const number of C.matchAll(numberMatcher)) {
-            found.push(number);
+            found.push({value: number, type: "number"});
         }
         C = C.replaceAll(numberMatcher, "");
     });
     // boolean literals
     languageDefinition.literals.boolean.forEach((booleanMatcher) => {
         for (const boolean of C.matchAll(booleanMatcher)) {
-            found.push(boolean);
+            found.push({value: boolean, type: "boolean"});
         }
         C = C.replaceAll(booleanMatcher, "");
     });
     // null literals
     languageDefinition.literals.null.forEach((nullMatcher) => {
         for (const nullLiteral of C.matchAll(nullMatcher)) {
-            found.push(nullLiteral);
+            found.push({value: nullLiteral, type: "null"});
         }
         C = C.replaceAll(nullMatcher, "");
     });
-    // loop over operators
+
+    // find operators
+    languageDefinition.operator.forEach((operatorMatcher) => {
+        for (const operator of C.matchAll(operatorMatcher)) {
+            found.push({value: operator, type: "operator"});
+        }
+        C = C.replaceAll(operatorMatcher, "");
+    });
     // loop over seperators
     // loop over keywords
     // loop over identifiers
