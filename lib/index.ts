@@ -35,6 +35,7 @@ export interface HighlighterColors {
  * The default color scheme for the syntax highlighter.
  * Values are picked generically based on what we thought looked good.
  */
+// TODO: change colors, thes look bad
 const defaultColors: HighlighterColors = {
     identifier: '#80dbdd',
     keyword: '#7e43d1',
@@ -371,13 +372,73 @@ export default function(code: string, options: SyntaxHighlighterOptions) {
         console.warn(`Syntax error in code: ${code}\nNot everything was matched!`);
     }
 
-    const highlighted = "";
-
     // Sort all found values by where in the code they should be.
     found = found.sort((a, b) => {
         return (a.index || 0) - (b.index || 0);
     });
-    
+
+    let highlighted = "";
+
+    // Color the text
+    for (const part of found) {
+        switch (part.type) {
+            case "newline":
+                highlighted += "<br>";
+                break;
+            case "whitespace":
+            case "character":
+                highlighted += part.value[0];
+                break;
+            case "identifier":
+                !options.tailwind
+                    ? highlighted += `<span style="color: ${options.colors.identifier}">${part.value[0]}</span>`
+                    : highlighted += `<span class="text-${options.colors.identifier}">${part.value[0]}</span>`;
+                break;
+            case "keyword":
+                !options.tailwind
+                    ? highlighted += `<span style="color: ${options.colors.keyword}">${part.value[0]}</span>`
+                    : highlighted += `<span class="text-${options.colors.keyword}">${part.value[0]}</span>`;
+                break;
+            case "separator":
+                !options.tailwind
+                    ? highlighted += `<span style="color: ${options.colors.separator}">${part.value[0]}</span>`
+                    : highlighted += `<span class="text-${options.colors.separator}">${part.value[0]}</span>`;
+                break;
+            case "operator":
+                !options.tailwind
+                    ? highlighted += `<span style="color: ${options.colors.operator}">${part.value[0]}</span>`
+                    : highlighted += `<span class="text-${options.colors.operator}">${part.value[0]}</span>`;
+                break;
+            case "boolean":
+                !options.tailwind
+                    ? highlighted += `<span style="color: ${options.colors.literals.boolean}">${part.value[0]}</span>`
+                    : highlighted += `<span class="text-${options.colors.literals.boolean}">${part.value[0]}</span>`;
+                break;
+            case "number":
+                !options.tailwind
+                    ? highlighted += `<span style="color: ${options.colors.literals.number}">${part.value[0]}</span>`
+                    : highlighted += `<span class="text-${options.colors.literals.number}">${part.value[0]}</span>`;
+                break;
+            case "string":
+                !options.tailwind
+                    ? highlighted += `<span style="color: ${options.colors.literals.string}">${part.value[0]}</span>`
+                    : highlighted += `<span class="text-${options.colors.literals.string}">${part.value[0]}</span>`;
+                break;
+            case "null":
+                !options.tailwind
+                    ? highlighted += `<span style="color: ${options.colors.literals.null}">${part.value[0]}</span>`
+                    : highlighted += `<span class="text-${options.colors.literals.null}">${part.value[0]}</span>`;
+                break;
+            case "comment":
+                !options.tailwind
+                    ? highlighted += `<span style="color: ${options.colors.comment}">${part.value[0]}</span>`
+                    : highlighted += `<span class="text-${options.colors.comment}">${part.value[0]}</span>`;
+                break;
+            default:
+                throw new Error("Something went wrong!");
+        }
+    }
+
     return highlighted;
 }
 
