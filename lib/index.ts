@@ -97,6 +97,14 @@ export default function(code: string, options: SyntaxHighlighterOptions) {
     const languageDefinition = getLanguageDefinition(options.language);
 
     // Loop over every regex in the language definition.
+    // loop over comments
+    // loop over string literals
+    //      We need to loop over all types of strings, then for ones that overlap, pick the longest match.
+    // loop over other literals
+    // loop over operators
+    // loop over seperators
+    // loop over keywords
+    // loop over identifiers
 
     return code;
 }
