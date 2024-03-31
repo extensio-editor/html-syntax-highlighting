@@ -180,9 +180,15 @@ export default function(code: string, options: SyntaxHighlighterOptions) {
         C = C.replaceAll(identifierMatcher, "");
     });
 
-    console.log(C);
+    // At this point, everything should be matched and removed.
+    // If not the code has a syntax error.
+    if (C.trim().length > 0) {
+        console.warn(`Syntax error in code: ${code}\nNot everything was matched!`);
+    }
 
-    return code;
+    const highlighted = "";
+
+    return highlighted;
 }
 
 export { registerLanguage, LanguageDefinition, Language };
