@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "type": "module",
   "main": "dist/index.js",
-  "repository": "https://github.com/extensio-editor/html-syntax-highlighting",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/extensio-editor/html-syntax-highlighting.git"
+  },
   "author": "Extensio Contributors",
   "license": "MPL-2.0",
   "devDependencies": {
