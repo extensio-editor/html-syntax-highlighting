@@ -1,20 +1,27 @@
 {
   "name": "@extensio/html-syntax-highlighting",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "main": "dist/index.js",
-  "repository": "https://github.com/extensio-editor/html-syntax-highlighting",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/extensio-editor/html-syntax-highlighting.git"
+  },
   "author": "Extensio Contributors",
   "license": "MPL-2.0",
   "devDependencies": {
+    "chai": "^5.1.0",
+    "mocha": "^10.4.0",
     "typescript": "^5.4.3"
   },
   "scripts": {
     "build": "tsc",
     "test": "yarn build && mocha"
   },
-  "dependencies": {
-    "chai": "^5.1.0",
-    "mocha": "^10.3.0"
-  }
+  "files": [
+    "dist/*",
+    "./README.md",
+    "LICENSE"
+  ],
+  "dependencies": {}
 }
