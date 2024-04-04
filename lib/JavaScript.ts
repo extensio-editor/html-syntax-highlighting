@@ -1,7 +1,7 @@
 import { registerLanguage, LanguageDefinition } from "./languageManager.js";
 
 const definition: LanguageDefinition = {
-identifier: [/[$a-zA-Z_][a-zA-Z0-9_]*/g],
+    identifier: [/[$_\p{ID_Start}][$\u200c\u200d\p{ID_Continue}]*/ug],
     keyword: [
         /abstract/g,
         /boolean/g,
@@ -71,7 +71,8 @@ identifier: [/[$a-zA-Z_][a-zA-Z0-9_]*/g],
         /\[/g,
         /\(/g,
         /\</g,
-        /,/g
+        /\,/g,
+        /\./g
     ],
     operator: [
         /\+/g,
@@ -114,9 +115,9 @@ identifier: [/[$a-zA-Z_][a-zA-Z0-9_]*/g],
         boolean: [/true/g,/false/g],
         number: [/[0-9]/g],
         string: [
+            /`.*`/gm,
             /'.*'/g,
-            /".*"/g,
-            /`.*`/g
+            /".*"/g
         ],
         null: [/null/g]
     },

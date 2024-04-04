@@ -115,16 +115,6 @@ export default function(code: string, options: SyntaxHighlighterOptions) {
 
     let found: result[] = [];
 
-    // find all comments
-    languageDefinition.comment.forEach((commentMatcher) => {
-        for (const comment of C.matchAll(commentMatcher)) {
-            // Dont need to ajust index since nothing has been removed from C yet
-            found.push({value: comment, type: "comment", index: comment.index!});
-        }
-
-        C = C.replaceAll(commentMatcher, "");
-    });
-
     // Find all strings
     languageDefinition.literals.string.forEach((stringMatcher) => {
         let fullFound: result[] = [];
@@ -150,6 +140,32 @@ export default function(code: string, options: SyntaxHighlighterOptions) {
 
         // We dont need to check overlapping strings because they will both be given the same color anyways.
         C = C.replaceAll(stringMatcher, "");
+    });
+
+    // find all comments
+    languageDefinition.comment.forEach((commentMatcher) => {
+        let fullFound: result[] = [];
+        let partialFound: result[] = [];
+        for (const comment of C.matchAll(commentMatcher)) {
+            partialFound.push({value: comment, type: "comment", index: comment.index!});
+        }
+        for (const comment of code.matchAll(commentMatcher)) {
+            fullFound.push({value: comment, type: "comment", index: comment.index!});
+        }
+        for (let i = 0; i < partialFound.length; i++) {
+            if (!fullFound[i]) {
+                throw new Error("Something went wrong!");
+            }
+
+            if (partialFound[i].value[0] === fullFound[i].value[0]) {
+                found.push({value: partialFound[i].value, type: "comment", index: fullFound[i].index});
+            } else {
+                fullFound.splice(i, 1);
+                i -= 1;
+            }
+        }
+
+        C = C.replaceAll(commentMatcher, "");
     });
 
     // find other literals
@@ -308,7 +324,7 @@ export default function(code: string, options: SyntaxHighlighterOptions) {
         for (const identifier of C.matchAll(identifierMatcher)) {
             partialFound.push({value: identifier, type: "identifier", index: identifier.index!});
         }
-        for (const identifier of code.matchAll(identifierMatcher)) {
+        for (const identifier of C.matchAll(identifierMatcher)) {
             fullFound.push({value: identifier, type: "identifier", index: identifier.index!});
         }
         for (let i = 0; i < partialFound.length; i++) {
@@ -369,7 +385,7 @@ export default function(code: string, options: SyntaxHighlighterOptions) {
     // At this point, everything should be matched and removed.
     // If not the code has a syntax error.
     if (C.trim().length > 0) {
-        console.warn(`Syntax error in code: ${code}\nNot everything was matched!`);
+        // console.warn(`Syntax error in cod!\nNot everything was matched!`);
     }
 
     // Sort all found values by where in the code they should be.
