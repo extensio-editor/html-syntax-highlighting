@@ -112,6 +112,8 @@ export default function(code: string, options: SyntaxHighlighterOptions) {
     const languageDefinition = getLanguageDefinition(options.language);
 
     let C = structuredClone(code);
+    C = C.replaceAll("<", "&lt;");
+    C = C.replaceAll(">", "&gt;");
 
     let found: result[] = [];
 
@@ -126,20 +128,11 @@ export default function(code: string, options: SyntaxHighlighterOptions) {
             fullFound.push({value: string, type: "string", index: string.index!});
         }
         for (let i = 0; i < partialFound.length; i++) {
-            if (!fullFound[i]) {
-                throw new Error("Something went wrong!");
-            }
-
-            if (partialFound[i].value[0] === fullFound[i].value[0]) {
-                found.push({value: partialFound[i].value, type: "string", index: fullFound[i].index});
-            } else {
-                fullFound.splice(i, 1);
-                i -= 1;
-            }
+            found.push({ value: partialFound[i].value, type: "string", index: partialFound[i].index });
         }
 
         // We dont need to check overlapping strings because they will both be given the same color anyways.
-        C = C.replaceAll(stringMatcher, "");
+        C = C.replaceAll(stringMatcher, (match) => "Ø".repeat(match.length));
     });
 
     // find all comments
@@ -153,19 +146,42 @@ export default function(code: string, options: SyntaxHighlighterOptions) {
             fullFound.push({value: comment, type: "comment", index: comment.index!});
         }
         for (let i = 0; i < partialFound.length; i++) {
-            if (!fullFound[i]) {
-                throw new Error("Something went wrong!");
-            }
-
-            if (partialFound[i].value[0] === fullFound[i].value[0]) {
-                found.push({value: partialFound[i].value, type: "comment", index: fullFound[i].index});
-            } else {
-                fullFound.splice(i, 1);
-                i -= 1;
-            }
+            found.push({value: partialFound[i].value, type: "comment", index: partialFound[i].index});
         }
 
-        C = C.replaceAll(commentMatcher, "");
+        C = C.replaceAll(commentMatcher, (match) => "Ø".repeat(match.length));
+    });
+
+    // find keywords
+    languageDefinition.keyword.forEach((keywordMatcher) => {
+        let fullFound: result[] = [];
+        let partialFound: result[] = [];
+        for (const keyword of C.matchAll(keywordMatcher)) {
+            partialFound.push({value: keyword, type: "keyword", index: keyword.index!});
+        }
+        for (const keyword of code.matchAll(keywordMatcher)) {
+            fullFound.push({value: keyword, type: "keyword", index: keyword.index!});
+        }
+        for (let i = 0; i < partialFound.length; i++) {
+            found.push({value: partialFound[i].value, type: "keyword", index: partialFound[i].index});
+        }
+        C = C.replaceAll(keywordMatcher, (match) => "Ø".repeat(match.length));
+    });
+
+    // find identifiers
+    languageDefinition.identifier.forEach((identifierMatcher) => {
+        let fullFound: result[] = [];
+        let partialFound: result[] = [];
+        for (const identifier of C.matchAll(identifierMatcher)) {
+            partialFound.push({value: identifier, type: "identifier", index: identifier.index!});
+        }
+        for (const identifier of C.matchAll(identifierMatcher)) {
+            fullFound.push({value: identifier, type: "identifier", index: identifier.index!});
+        }
+        for (let i = 0; i < partialFound.length; i++) {
+            found.push({value: partialFound[i].value, type: "identifier", index: partialFound[i].index});
+        }
+        C = C.replaceAll(identifierMatcher, (match) => "Ø".repeat(match.length));
     });
 
     // find other literals
@@ -180,18 +196,9 @@ export default function(code: string, options: SyntaxHighlighterOptions) {
             fullFound.push({value: number, type: "number", index: number.index!});
         }
         for (let i = 0; i < partialFound.length; i++) {
-            if (!fullFound[i]) {
-                throw new Error("Something went wrong!");
-            }
-
-            if (partialFound[i].value[0] === fullFound[i].value[0]) {
-                found.push({value: partialFound[i].value, type: "number", index: fullFound[i].index});
-            } else {
-                fullFound.splice(i, 1);
-                i -= 1;
-            }
+            found.push({value: partialFound[i].value, type: "number", index: partialFound[i].index});
         }
-        C = C.replaceAll(numberMatcher, "");
+        C = C.replaceAll(numberMatcher, (match) => "Ø".repeat(match.length));
     });
     // boolean literals
     languageDefinition.literals.boolean.forEach((booleanMatcher) => {
@@ -204,18 +211,9 @@ export default function(code: string, options: SyntaxHighlighterOptions) {
             fullFound.push({value: boolean, type: "boolean", index: boolean.index!});
         }
         for (let i = 0; i < partialFound.length; i++) {
-            if (!fullFound[i]) {
-                throw new Error("Something went wrong!");
-            }
-
-            if (partialFound[i].value[0] === fullFound[i].value[0]) {
-                found.push({value: partialFound[i].value, type: "boolean", index: fullFound[i].index});
-            } else {
-                fullFound.splice(i, 1);
-                i -= 1;
-            }
+            found.push({value: partialFound[i].value, type: "boolean", index: partialFound[i].index});
         }
-        C = C.replaceAll(booleanMatcher, "");
+        C = C.replaceAll(booleanMatcher, (match) => "Ø".repeat(match.length));
     });
     // null literals
     languageDefinition.literals.null.forEach((nullMatcher) => {
@@ -228,18 +226,9 @@ export default function(code: string, options: SyntaxHighlighterOptions) {
             fullFound.push({value: nullLiteral, type: "nullLiteral", index: nullLiteral.index!});
         }
         for (let i = 0; i < partialFound.length; i++) {
-            if (!fullFound[i]) {
-                throw new Error("Something went wrong!");
-            }
-
-            if (partialFound[i].value[0] === fullFound[i].value[0]) {
-                found.push({value: partialFound[i].value, type: "nullLiteral", index: fullFound[i].index});
-            } else {
-                fullFound.splice(i, 1);
-                i -= 1;
-            }
+            found.push({value: partialFound[i].value, type: "nullLiteral", index: partialFound[i].index});
         }
-        C = C.replaceAll(nullMatcher, "");
+        C = C.replaceAll(nullMatcher, (match) => "Ø".repeat(match.length));
     });
 
     // find operators
@@ -253,18 +242,9 @@ export default function(code: string, options: SyntaxHighlighterOptions) {
             fullFound.push({value: operator, type: "operator", index: operator.index!});
         }
         for (let i = 0; i < partialFound.length; i++) {
-            if (!fullFound[i]) {
-                throw new Error("Something went wrong!");
-            }
-
-            if (partialFound[i].value[0] === fullFound[i].value[0]) {
-                found.push({value: partialFound[i].value, type: "operator", index: fullFound[i].index});
-            } else {
-                fullFound.splice(i, 1);
-                i -= 1;
-            }
+            found.push({value: partialFound[i].value, type: "operator", index: partialFound[i].index});
         }
-        C = C.replaceAll(operatorMatcher, "");
+        C = C.replaceAll(operatorMatcher, (match) => "Ø".repeat(match.length));
     });
 
     // find seperators
@@ -278,96 +258,28 @@ export default function(code: string, options: SyntaxHighlighterOptions) {
             fullFound.push({value: separator, type: "separator", index: separator.index!});
         }
         for (let i = 0; i < partialFound.length; i++) {
-            if (!fullFound[i]) {
-                throw new Error("Something went wrong!");
-            }
-
-            if (partialFound[i].value[0] === fullFound[i].value[0]) {
-                found.push({value: partialFound[i].value, type: "separator", index: fullFound[i].index});
-            } else {
-                fullFound.splice(i, 1);
-                i -= 1;
-            }
+            found.push({value: partialFound[i].value, type: "separator", index: partialFound[i].index});
         }
-        C = C.replaceAll(separatorMatcher, "");
+        C = C.replaceAll(separatorMatcher, (match) => "Ø".repeat(match.length));
     });
 
-    // find keywords
-    languageDefinition.keyword.forEach((keywordMatcher) => {
-        let fullFound: result[] = [];
-        let partialFound: result[] = [];
-        for (const keyword of C.matchAll(keywordMatcher)) {
-            partialFound.push({value: keyword, type: "keyword", index: keyword.index!});
-        }
-        for (const keyword of code.matchAll(keywordMatcher)) {
-            fullFound.push({value: keyword, type: "keyword", index: keyword.index!});
-        }
-        for (let i = 0; i < partialFound.length; i++) {
-            if (!fullFound[i]) {
-                throw new Error("Something went wrong!");
-            }
-
-            if (partialFound[i].value[0] === fullFound[i].value[0]) {
-                found.push({value: partialFound[i].value, type: "keyword", index: fullFound[i].index});
-            } else {
-                fullFound.splice(i, 1);
-                i -= 1;
-            }
-        }
-        C = C.replaceAll(keywordMatcher, "");
-    });
-
-    // find identifiers
-    languageDefinition.identifier.forEach((identifierMatcher) => {
-        let fullFound: result[] = [];
-        let partialFound: result[] = [];
-        for (const identifier of C.matchAll(identifierMatcher)) {
-            partialFound.push({value: identifier, type: "identifier", index: identifier.index!});
-        }
-        for (const identifier of C.matchAll(identifierMatcher)) {
-            fullFound.push({value: identifier, type: "identifier", index: identifier.index!});
-        }
-        for (let i = 0; i < partialFound.length; i++) {
-            if (!fullFound[i]) {
-                throw new Error("Something went wrong!");
-            }
-
-            if (partialFound[i].value[0] === fullFound[i].value[0]) {
-                found.push({value: partialFound[i].value, type: "identifier", index: fullFound[i].index});
-            } else {
-                fullFound.splice(i, 1);
-                i -= 1;
-            }
-        }
-        C = C.replaceAll(identifierMatcher, "");
-    });
-
-    // New lines in html are made with <br> tags. So we match newlines seperately.
-    let fullFound: result[] = [];
-    let partialFound: result[] = [];
-    for(const newline of C.matchAll(/\n\r|\n/g)) {
-        partialFound.push({value: newline, type: "newline", index: newline.index!});
-    }
-    for (const newline of code.matchAll(/\n\r|\n/g)) {
-        fullFound.push({value: newline, type: "newline", index: newline.index!});
-    }
-    for (let i = 0; i < partialFound.length; i++) {
-        found.push({value: partialFound[i].value, type: "newline", index: fullFound[i].index});
-    }
+    // New lines in html are ignored but must still be replaced out.
+    C = C.replaceAll(/\n\r|\n/g, (match) => "Ø".repeat(match.length));
 
     // We want the code to be the same in the source as in the result,
     // so we are also matching any unmatched whitespace.
-    fullFound = [];
-    partialFound = [];
+    let fullFound: result[] = [];
+    let partialFound: result[] = [];
     for(const whitespace of C.matchAll(/\s+?/g)) {
         partialFound.push({value: whitespace, type: "whitespace", index: whitespace.index!});
     }
     for (const whitespace of code.matchAll(/\s+?/g)) {
         fullFound.push({value: whitespace, type: "whitespace", index: whitespace.index!});
     }
-    for (let i = 0; i < partialFound.length; i++) {
-        found.push({value: partialFound[i].value, type: "whitespace", index: fullFound[i].index});
+    for (let i = 0; i < partialFound.length; i++)
+       { found.push({value: partialFound[i].value, type: "whitespace", index: partialFound[i].index});
     }
+    C = C.replaceAll(/\s+?/g, (match) => "Ø".repeat(match.length));
 
     // For the same reason we will also match any other unmatched characters.
     fullFound = [];
@@ -381,12 +293,13 @@ export default function(code: string, options: SyntaxHighlighterOptions) {
     for (let i = 0; i < partialFound.length; i++) {
         found.push({value: partialFound[i].value, type: "character", index: fullFound[i].index});
     }
+    C = C.replaceAll(/\S+/g, (match) => "Ø".repeat(match.length));
 
     // At this point, everything should be matched and removed.
     // If not the code has a syntax error.
-    if (C.trim().length > 0) {
-        // console.warn(`Syntax error in cod!\nNot everything was matched!`);
-    }
+    // if (C.trim().length > 0) {
+    //     console.warn(`Syntax error in cod!\nNot everything was matched!`);
+    // }
 
     // Sort all found values by where in the code they should be.
     found = found.sort((a, b) => {
@@ -455,7 +368,7 @@ export default function(code: string, options: SyntaxHighlighterOptions) {
         }
     }
 
-    return highlighted;
+    return highlighted.replaceAll("Ø", "");
 }
 
 export { registerLanguage, LanguageDefinition, Language };
