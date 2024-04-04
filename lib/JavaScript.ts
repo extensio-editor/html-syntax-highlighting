@@ -120,7 +120,7 @@ const definition: LanguageDefinition = {
         null: [/null/g]
     },
     comment: [
-        /\/\*.*\*\//g,
+        /\/\*.*\*\//gs,
         /\/\/.*/g
     ],
 }
