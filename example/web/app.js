@@ -13,6 +13,7 @@ function highlight() {
     // Create the config
     const config = {
         language: "JS",
+        useBreaks: true,
     }
 
     // Highlight the code
