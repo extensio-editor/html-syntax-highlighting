@@ -5,6 +5,8 @@ It has support for using tailwind or just standard CSS.
 
 It is very simple and intuitive to use. Simply said string with code goes in highlighted string as HTML comes out.
 
+You can see an example [on github pages](https://extensio-editor.github.io/html-syntax-highlighting/). The source code for that is available in the [example/web folder](https://github.com/extensio-editor/html-syntax-highlighting/tree/main/example/web)
+
 ## Languages
 
 We aim to be able to support the following languages.
