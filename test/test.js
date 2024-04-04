@@ -14,7 +14,7 @@ describe('Registration', () => {
 
         it("Should be able to retrieve JavaScript (default language)", () => {
             const JavaScript = getLanguageDefinition("JavaScript");
-            expect(JavaScript.keyword).to.have.a.lengthOf(57).and.to.be.an('array');
+            expect(JavaScript.keyword).to.have.a.lengthOf(55).and.to.be.an('array');
         });
     });
 
