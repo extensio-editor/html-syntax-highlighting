@@ -1,0 +1,23 @@
+body {
+    background-color: #302b30;
+    color: #dbcedb;
+    width: 100vw;
+    margin: 0;
+    height: 100vh;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: "Inter", sans-serif;
+    flex-direction: column;
+}
+
+a {
+    color: #868cd0
+}
+
+#highlightedContainer {
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    text-align: left;
+}
