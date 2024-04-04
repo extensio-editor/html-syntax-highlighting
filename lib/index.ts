@@ -3,11 +3,13 @@ import { Language, LanguageDefinition, getLanguages, registerLanguage,  } from "
 /**
  * @property {string} language - The language that the string should be highlighted as, Default is javascript.
  * @property {string} tailwind - Wether or not to use Tailwind CSS, Default is false.
+ * @property {boolean} useBreaks - Wether to add the <br /> tag instead of just the newline. Default is false.
  * @property {HighlighterColors} colors - The colors that should be used for highlighting.
  */
 export interface SyntaxHighlighterOptions {
     language?: string;
     tailwind?: boolean;
+    useBreaks?: boolean;
     colors?: HighlighterColors;
 }
 
@@ -107,6 +109,7 @@ export default function(code: string, options: SyntaxHighlighterOptions) {
     options.language = options.language || "javascript";
     options.tailwind = options.tailwind || false;
     options.colors = options.colors || defaultColors;
+    options.useBreaks = options.useBreaks || false;
 
     // Get the language definition based of the language.
     const languageDefinition = getLanguageDefinition(options.language);
@@ -263,7 +266,20 @@ export default function(code: string, options: SyntaxHighlighterOptions) {
         C = C.replaceAll(separatorMatcher, (match) => "Ø".repeat(match.length));
     });
 
-    // New lines in html are ignored but must still be replaced out.
+    // New lines in html are ignored but must still be replaced out. Unless useBreaks is true
+    if (options.useBreaks) {
+        let fullFound: result[] = [];
+        let partialFound: result[] = [];
+        for (const separator of C.matchAll(/\n\r|\n/g)) {
+            partialFound.push({value: separator, type: "newline", index: separator.index!});
+        }
+        for (const separator of code.matchAll(/\n\r|\n/g)) {
+            fullFound.push({value: separator, type: "newline", index: separator.index!});
+        }
+        for (let i = 0; i < partialFound.length; i++) {
+            found.push({value: partialFound[i].value, type: "newline", index: partialFound[i].index});
+        }
+    }
     C = C.replaceAll(/\n\r|\n/g, (match) => "Ø".repeat(match.length));
 
     // We want the code to be the same in the source as in the result,
@@ -294,12 +310,6 @@ export default function(code: string, options: SyntaxHighlighterOptions) {
         found.push({value: partialFound[i].value, type: "character", index: fullFound[i].index});
     }
     C = C.replaceAll(/\S+/g, (match) => "Ø".repeat(match.length));
-
-    // At this point, everything should be matched and removed.
-    // If not the code has a syntax error.
-    // if (C.trim().length > 0) {
-    //     console.warn(`Syntax error in cod!\nNot everything was matched!`);
-    // }
 
     // Sort all found values by where in the code they should be.
     found = found.sort((a, b) => {
